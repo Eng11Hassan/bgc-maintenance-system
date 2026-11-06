@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <img src="{{ url_for('static', filename='images/bgc-logo.jpg') }}" alt="BGC Logo" height="70" class="mb-2 rounded">
+                <h4 class="mt-2 fw-bold">تسجيل الدخول للنظام</h4>
+                <p class="text-muted">نظام إدارة صيانة وأصول المعدات - BGC</p>
+            </div>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">اسم المستخدم:</label>
+                    <input type="text" name="username" class="form-control" placeholder="اسم المستخدم" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">كلمة المرور:</label>
+                    <input type="password" name="password" class="form-control" placeholder="كلمة المرور" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 btn-custom">دخول</button>
+            </form>
+            <div class="text-center mt-3 text-muted small">
+                الحساب الافتراضي: <b>admin</b> | الكلمة: <b>admin123</b>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

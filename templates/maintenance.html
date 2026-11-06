@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">سجل الصيانة وأوامر الشغل</h3>
+    <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#addMaintModal">
+        <i class="fa-solid fa-wrench"></i> تسجيل صيانة جديدة
+    </button>
+</div>
+
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th>كود المعدة</th>
+                    <th>اسم المعدة</th>
+                    <th>نوع الصيانة</th>
+                    <th>التاريخ</th>
+                    <th>الإجراء المتخذ</th>
+                    <th>قطع الغيار</th>
+                    <th>الفني</th>
+                    <th>التكلفة</th>
+                    <th>الموقف</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td><b>{{ log.asset_code }}</b></td>
+                    <td>{{ log.asset_name }}</td>
+                    <td>{{ log.maint_type }}</td>
+                    <td>{{ log.start_date }}</td>
+                    <td>{{ log.action_taken }}</td>
+                    <td>{{ log.spare_parts }}</td>
+                    <td>{{ log.technician }}</td>
+                    <td class="text-danger fw-bold">{{ log.cost }} ج.م</td>
+                    <td>
+                        <span class="badge {% if log.status == 'تمت الصيانة' %}bg-success{% elif log.status == 'جاري العمل' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ log.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="/maintenance/delete/{{ log.id }}" onclick="return confirm('تأكيد مسح أمر الصيانة؟');" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="10" class="text-center text-muted">لا يوجد سجلات صيانة حالياً</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- نافذة تسجيل صيانة Modal -->
+<div class="modal fade" id="addMaintModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">تسجيل عملية صيانة / عطل</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-3">
+                    <div class="col-md-6">
+                        <label>كود المعدة:</label>
+                        <input type="text" name="asset_code" class="form-control" placeholder="11030504" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>اسم المعدة:</label>
+                        <input type="text" name="asset_name" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>نوع الصيانة:</label>
+                        <select name="maint_type" class="form-select">
+                            <option>وقائية</option>
+                            <option>طارئة</option>
+                            <option>دوريات</option>
+                            <option>عمرة شاملة</option>
+                            <option>معايرة</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ البدء:</label>
+                        <input type="date" name="start_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>التاريخ القادم:</label>
+                        <input type="date" name="next_date" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label>تفاصيل الإجراءات والصيانة:</label>
+                        <textarea name="action_taken" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label>قطع الغيار المستبدلة:</label>
+                        <input type="text" name="spare_parts" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label>الفني / جهة الصيانة:</label>
+                        <input type="text" name="technician" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label>التكلفة (ج.م):</label>
+                        <input type="number" step="0.01" name="cost" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-6">
+                        <label>موقف التنفيذ:</label>
+                        <select name="status" class="form-select">
+                            <option value="تمت الصيانة">تمت الصيانة</option>
+                            <option value="جاري العمل">جاري العمل</option>
+                            <option value="مؤجل / قيد الانتظار">مؤجل / قيد الانتظار</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">حفظ أمر الصيانة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">سجل الأصول والمعدات</h3>
+    <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#addAssetModal">
+        <i class="fa-solid fa-plus"></i> إضافة أصل جديد
+    </button>
+</div>
+
+<!-- جدول عرض الأصول -->
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>كود الأصل</th>
+                    <th>اسم ومواصفات الأصل</th>
+                    <th>الفئة</th>
+                    <th>الموقع</th>
+                    <th>الحالة</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in assets %}
+                <tr>
+                    <td><b>{{ a.asset_code }}</b></td>
+                    <td>{{ a.asset_name }}</td>
+                    <td>{{ a.category }}</td>
+                    <td>{{ a.location }}</td>
+                    <td><span class="badge bg-success">{{ a.status }}</span></td>
+                    <td>
+                        <a href="/assets/delete/{{ a.id }}" onclick="return confirm('هل تريد حذف هذا الأصل؟');" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted">لا توجد أصول مسجلة حالياً</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- نافذة إضافة أصل Modal -->
+<div class="modal fade" id="addAssetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة معدة / أصل جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>كود الأصل (مثال: 11030504):</label>
+                        <input type="text" name="asset_code" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label>اسم ومواصفات الأصل:</label>
+                        <input type="text" name="asset_name" class="form-control" placeholder="ماكينة لحام ميلر ديزل..." required>
+                    </div>
+                    <div class="mb-2">
+                        <label>الفئة:</label>
+                        <input type="text" name="category" class="form-control" value="الات ومعدات">
+                    </div>
+                    <div class="mb-2">
+                        <label>الموقع:</label>
+                        <input type="text" name="location" class="form-control" value="نوربيتكو">
+                    </div>
+                    <div class="mb-2">
+                        <label>حالة المعدة:</label>
+                        <select name="status" class="form-select">
+                            <option value="يعمل بحالة جيدة">يعمل بحالة جيدة</option>
+                            <option value="تحت الصيانة">تحت الصيانة</option>
+                            <option value="عاطل">عاطل</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">حفظ الأصل</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
