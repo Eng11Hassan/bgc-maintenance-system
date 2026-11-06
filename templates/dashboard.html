@@ -2,58 +2,60 @@
 {% block content %}
 <h3 class="fw-bold mb-4">لوحة مؤشرات الصيانة والمعدات</h3>
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white p-3">
-            <h5>إجمالي الأصول والمعدات</h5>
-            <h2 class="fw-bold">{{ total_assets }}</h2>
+<div class="row g-3">
+    <div class="col-6 col-md-3">
+        <div class="card bg-primary text-white p-3 h-100">
+            <h6>إجمالي الأصول والمعدات</h6>
+            <h2 class="fw-bold mb-0">{{ total_assets }}</h2>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white p-3">
-            <h5>أوامر الصيانة المسجلة</h5>
-            <h2 class="fw-bold">{{ total_logs }}</h2>
+    <div class="col-6 col-md-3">
+        <div class="card bg-success text-white p-3 h-100">
+            <h6>أوامر الصيانة المسجلة</h6>
+            <h2 class="fw-bold mb-0">{{ total_logs }}</h2>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark p-3">
-            <h5>صيانات معلقة / قيد العمل</h5>
-            <h2 class="fw-bold">{{ pending_maint }}</h2>
+    <div class="col-6 col-md-3">
+        <div class="card bg-warning text-dark p-3 h-100">
+            <h6>صيانة معلقة / قيد العمل</h6>
+            <h2 class="fw-bold mb-0">{{ pending_maint }}</h2>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-danger text-white p-3">
-            <h5>إجمالي تكلفة الصيانة (ج.م)</h5>
-            <h2 class="fw-bold">{{ "{:,.2f}".format(total_cost) }}</h2>
+    <div class="col-6 col-md-3">
+        <div class="card bg-danger text-white p-3 h-100">
+            <h6>إجمالي تكلفة الصيانة (ج.م)</h6>
+            <h2 class="fw-bold mb-0">{{ "{:,.2f}".format(total_cost) }}</h2>
         </div>
     </div>
 </div>
 
 <div class="card p-3 mt-3">
     <h5 class="fw-bold mb-3">آخر عمليات الصيانة المسجلة</h5>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>كود المعدة</th>
-                <th>اسم المعدة</th>
-                <th>نوع الصيانة</th>
-                <th>التكلفة</th>
-                <th>الحالة</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in recent_logs %}
-            <tr>
-                <td>{{ item.asset_code }}</td>
-                <td>{{ item.asset_name }}</td>
-                <td>{{ item.maint_type }}</td>
-                <td>{{ item.cost }} ج.م</td>
-                <td><span class="badge bg-info">{{ item.status }}</span></td>
-            </tr>
-            {% else %}
-            <tr><td colspan="5" class="text-center">لا توجد بيانات صيانة مسجلة حتى الآن</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>كود المعدة</th>
+                    <th>اسم المعدة</th>
+                    <th>نوع الصيانة</th>
+                    <th>التكلفة</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_logs %}
+                <tr>
+                    <td>{{ item.asset_code }}</td>
+                    <td>{{ item.asset_name }}</td>
+                    <td>{{ item.maint_type }}</td>
+                    <td>{{ item.cost }} ج.م</td>
+                    <td><span class="badge bg-info">{{ item.status }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center">لا توجد بيانات صيانة مسجلة حتى الآن</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

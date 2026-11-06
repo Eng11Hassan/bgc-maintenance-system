@@ -11,9 +11,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'bgc-maintenance-secret-key-2026')
 # Supabase/Postgres connection string via DATABASE_URL; falls back to local SQLite for dev
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///maintenance.db')
-# Supabase provides postgres://; SQLAlchemy expects postgresql://
+# Supabase provides postgres://; use psycopg (v3) driver for SQLAlchemy
 if database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    database_url = database_url.replace('postgres://', 'postgresql+psycopg://', 1)
+elif database_url.startswith('postgresql://'):
+    database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -31,9 +33,9 @@ class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     asset_code = db.Column(db.String(50), unique=True, nullable=False)
     asset_name = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), default=الات ومعدات)
-    location = db.Column(db.String(50), default=نوربيتكو)
-    status = db.Column(db.String(20), default=يعمل بحالة جيدة)
+    category = db.Column(db.String(50), default='الات ومعدات')
+    location = db.Column(db.String(50), default='نوربيتكو')
+    status = db.Column(db.String(20), default='يعمل بحالة جيدة')
 
 class MaintenanceLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,7 +48,7 @@ class MaintenanceLog(db.Model):
     spare_parts = db.Column(db.String(200))
     technician = db.Column(db.String(100))
     cost = db.Column(db.Float, default=0.0)
-    status = db.Column(db.String(50), default=تمت الصيانة) # تمت، جاري العمل، مؤجل
+    status = db.Column(db.String(50), default='تمت الصيانة') # تمت، جاري العمل، مؤجل
 
 @login_manager.user_loader
 def load_user(user_id):
