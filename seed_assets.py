@@ -21,7 +21,7 @@ def parse_rows(text):
             'asset_code': code.strip(),
             'asset_name': name.strip(),
             'category': category.strip() or 'آلات ومعدات',
-            'location': location.strip() or 'نوربيcko',
+            'location': location.strip() or 'Norpetco',
             'status': 'يعمل بحالة جيدة',
         })
     return rows

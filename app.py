@@ -34,7 +34,7 @@ class Asset(db.Model):
     asset_code = db.Column(db.String(50), unique=True, nullable=False)
     asset_name = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(50), default='الات ومعدات')
-    location = db.Column(db.String(50), default='نوربيتكو')
+    location = db.Column(db.String(50), default='Norpetco')
     status = db.Column(db.String(20), default='يعمل بحالة جيدة')
 
 class MaintenanceLog(db.Model):
