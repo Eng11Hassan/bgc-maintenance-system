@@ -1,47 +1,84 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3 class="fw-bold mb-4">لوحة مؤشرات الصيانة والمعدات</h3>
+<h3 class="fw-bold mb-4">لوحة المؤشرات</h3>
 
 <div class="row g-3">
     <div class="col-6 col-md-3">
         <div class="card bg-primary text-white p-3 h-100">
-            <h6>إجمالي الأصول والمعدات</h6>
+            <h6>إجمالي الأصول</h6>
             <h2 class="fw-bold mb-0">{{ total_assets }}</h2>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card bg-success text-white p-3 h-100">
-            <h6>أوامر الصيانة المسجلة</h6>
-            <h2 class="fw-bold mb-0">{{ total_logs }}</h2>
+        <div class="card bg-danger text-white p-3 h-100">
+            <h6>أصول فيها أعطال</h6>
+            <h2 class="fw-bold mb-0">{{ faulty_assets }}</h2>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card bg-warning text-dark p-3 h-100">
-            <h6>صيانة معلقة / قيد العمل</h6>
-            <h2 class="fw-bold mb-0">{{ pending_maint }}</h2>
+            <h6>بلاغات جديدة</h6>
+            <h2 class="fw-bold mb-0">{{ new_reports }}</h2>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card bg-danger text-white p-3 h-100">
+        <div class="card bg-info text-white p-3 h-100">
+            <h6>صيانة دورية هذا الأسبوع</h6>
+            <h2 class="fw-bold mb-0">{{ weekly_periodic|length }}</h2>
+        </div>
+    </div>
+</div>
+
+{% if current_user.role == 'manager' %}
+<div class="row g-3 mt-1">
+    <div class="col-6 col-md-3">
+        <div class="card bg-success text-white p-3 h-100">
+            <h6>أوامر الصيانة</h6>
+            <h2 class="fw-bold mb-0">{{ total_logs }}</h2>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card bg-secondary text-white p-3 h-100">
+            <h6>صيانة معلقة</h6>
+            <h2 class="fw-bold mb-0">{{ pending_maint }}</h2>
+        </div>
+    </div>
+    <div class="col-6 col-md-6">
+        <div class="card bg-dark text-white p-3 h-100">
             <h6>إجمالي تكلفة الصيانة (ج.م)</h6>
             <h2 class="fw-bold mb-0">{{ "{:,.2f}".format(total_cost) }}</h2>
         </div>
     </div>
 </div>
+{% endif %}
 
 <div class="card p-3 mt-3">
-    <h5 class="fw-bold mb-3">آخر عمليات الصيانة المسجلة</h5>
+    <h5 class="fw-bold mb-3">صيانة دورية خلال الأسبوع</h5>
     <div class="table-responsive">
         <table class="table table-hover">
-            <thead>
+            <thead><tr><th>كود المعدة</th><th>اسم المعدة</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+            <tbody>
+                {% for item in weekly_periodic %}
                 <tr>
-                    <th>كود المعدة</th>
-                    <th>اسم المعدة</th>
-                    <th>نوع الصيانة</th>
-                    <th>التكلفة</th>
-                    <th>الحالة</th>
+                    <td>{{ item.asset_code }}</td>
+                    <td>{{ item.asset_name }}</td>
+                    <td>{{ item.next_date or item.start_date }}</td>
+                    <td><span class="badge bg-info">{{ item.status }}</span></td>
                 </tr>
-            </thead>
+                {% else %}
+                <tr><td colspan="4" class="text-center">لا توجد صيانات دورية هذا الأسبوع</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if current_user.role == 'manager' %}
+<div class="card p-3 mt-3">
+    <h5 class="fw-bold mb-3">آخر عمليات الصيانة</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead><tr><th>كود المعدة</th><th>اسم المعدة</th><th>نوع</th><th>التكلفة</th><th>الحالة</th></tr></thead>
             <tbody>
                 {% for item in recent_logs %}
                 <tr>
@@ -52,7 +89,30 @@
                     <td><span class="badge bg-info">{{ item.status }}</span></td>
                 </tr>
                 {% else %}
-                <tr><td colspan="5" class="text-center">لا توجد بيانات صيانة مسجلة حتى الآن</td></tr>
+                <tr><td colspan="5" class="text-center">لا توجد بيانات</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div class="card p-3 mt-3">
+    <h5 class="fw-bold mb-3">آخر البلاغات</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead><tr><th>كود المعدة</th><th>الوصف</th><th>المبلّغ</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+            <tbody>
+                {% for r in recent_reports %}
+                <tr>
+                    <td>{{ r.asset_code }}</td>
+                    <td>{{ r.description }}</td>
+                    <td>{{ r.reporter_name or '-' }}</td>
+                    <td>{{ r.created_at }}</td>
+                    <td><span class="badge {% if r.status == 'جديد' %}bg-danger{% else %}bg-success{% endif %}">{{ r.status }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center">لا توجد بلاغات</td></tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -38,8 +38,15 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="/"><i class="fa-solid fa-chart-line"></i> الرئيسية</a></li>
+                    {% if current_user.role == 'manager' %}
                     <li class="nav-item"><a class="nav-link" href="/assets"><i class="fa-solid fa-boxes-stacked"></i> سجل الأصول</a></li>
                     <li class="nav-item"><a class="nav-link" href="/maintenance"><i class="fa-solid fa-wrench"></i> سجل الصيانة</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/reports"><i class="fa-solid fa-clipboard-list"></i> البلاغات</a></li>
+                    {% endif %}
+                    {% if current_user.role in ['manager','technician'] %}
+                    <li class="nav-item"><a class="nav-link" href="/tickets"><i class="fa-solid fa-ticket"></i> التيكيتات</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="/report"><i class="fa-solid fa-triangle-exclamation"></i> الإبلاغ عن عطل</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
                     <span class="navbar-text text-white">مرحباً: {{ current_user.username }}</span>

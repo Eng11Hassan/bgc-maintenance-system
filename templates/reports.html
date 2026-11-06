@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="fw-bold mb-4">بلاغات الأعطال</h3>
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>كود المعدة</th>
+                    <th>اسم المعدة</th>
+                    <th>وصف العطل</th>
+                    <th>المبلّغ</th>
+                    <th>التاريخ</th>
+                    <th>الحالة</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reports %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.asset_code }}</td>
+                    <td>{{ r.asset_name }}</td>
+                    <td>{{ r.description }}</td>
+                    <td>{{ r.reporter_name or '-' }}</td>
+                    <td>{{ r.created_at }}</td>
+                    <td><span class="badge {% if r.status == 'جديد' %}bg-danger{% else %}bg-success{% endif %}">{{ r.status }}</span></td>
+                    <td>
+                        {% if r.status == 'جديد' and current_user.role == 'manager' %}
+                        <a href="/reports/convert/{{ r.id }}" class="btn btn-primary btn-sm">تحويل لتيكيت</a>
+                        {% elif r.ticket_id %}
+                        <a href="/maintenance/edit/{{ r.ticket_id }}" class="btn btn-warning btn-sm">عرض التذكرة</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center text-muted">لا توجد بلاغات</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

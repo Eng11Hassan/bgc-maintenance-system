@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="fw-bold mb-4">تيكيتات الصيانة (مفتوحة)</h3>
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>كود المعدة</th>
+                    <th>اسم المعدة</th>
+                    <th>نوع</th>
+                    <th>الوصف/الإجراء</th>
+                    <th>الحالة</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tickets %}
+                <tr>
+                    <td>{{ t.id }}</td>
+                    <td>{{ t.asset_code }}</td>
+                    <td>{{ t.asset_name }}</td>
+                    <td>{{ t.maint_type }}</td>
+                    <td>{{ t.action_taken }}</td>
+                    <td><span class="badge bg-warning text-dark">{{ t.status }}</span></td>
+                    <td>
+                        <a href="/tickets/close/{{ t.id }}" class="btn btn-success btn-sm">إغلاق / تسجيل صيانة</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted">لا توجد تيكيتات مفتوحة</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
