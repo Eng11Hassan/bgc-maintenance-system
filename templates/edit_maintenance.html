@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">تعديل سجل الصيانة</h3>
+    <a href="/maintenance" class="btn btn-secondary btn-custom"><i class="fa-solid fa-arrow-right"></i> رجوع</a>
+</div>
+
+<div class="card p-3">
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label>اختر المعدة من سجل الأصول:</label>
+                <select id="assetSelect" class="form-select" required>
+                    <option value="">-- اختر معدة --</option>
+                    {% for a in assets %}
+                    <option value="{{ a.asset_code }}" data-name="{{ a.asset_name }}" {% if a.asset_code == log.asset_code %}selected{% endif %}>{{ a.asset_code }} - {{ a.asset_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="hidden" name="asset_code" id="asset_code" value="{{ log.asset_code }}">
+            <input type="hidden" name="asset_name" id="asset_name" value="{{ log.asset_name }}">
+            <div class="col-md-4">
+                <label>نوع الصيانة:</label>
+                <select name="maint_type" class="form-select">
+                    {% for t in ['وقائية','طارئة','دوريات','عمرة شاملة','معايرة'] %}
+                    <option value="{{ t }}" {% if t == log.maint_type %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label>تاريخ البدء:</label>
+                <input type="date" name="start_date" class="form-control" value="{{ log.start_date }}" required>
+            </div>
+            <div class="col-md-4">
+                <label>التاريخ القادم:</label>
+                <input type="date" name="next_date" class="form-control" value="{{ log.next_date or '' }}">
+            </div>
+            <div class="col-md-12">
+                <label>تفاصيل الإجراءات والصيانة:</label>
+                <textarea name="action_taken" class="form-control" rows="2">{{ log.action_taken or '' }}</textarea>
+            </div>
+            <div class="col-md-6">
+                <label>قطع الغيار المستبدلة:</label>
+                <input type="text" name="spare_parts" class="form-control" value="{{ log.spare_parts or '' }}">
+            </div>
+            <div class="col-md-6">
+                <label>الفني / جهة الصيانة:</label>
+                <input type="text" name="technician" class="form-control" value="{{ log.technician or '' }}">
+            </div>
+            <div class="col-md-6">
+                <label>التكلفة (ج.م):</label>
+                <input type="number" step="0.01" name="cost" class="form-control" value="{{ log.cost }}">
+            </div>
+            <div class="col-md-6">
+                <label>موقف التنفيذ:</label>
+                <select name="status" class="form-select">
+                    {% for s in ['تمت الصيانة','جاري العمل','مؤجل / قيد الانتظار'] %}
+                    <option value="{{ s }}" {% if s == log.status %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer mt-3">
+            <button type="submit" class="btn btn-primary btn-custom">حفظ التعديلات</button>
+        </div>
+    </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var sel = document.getElementById('assetSelect');
+    var code = document.getElementById('asset_code');
+    var name = document.getElementById('asset_name');
+    if (sel) {
+        sel.addEventListener('change', function() {
+            var opt = sel.options[sel.selectedIndex];
+            code.value = sel.value || '';
+            name.value = opt ? (opt.getAttribute('data-name') || '') : '';
+        });
+    }
+});
+</script>
+{% endblock %}

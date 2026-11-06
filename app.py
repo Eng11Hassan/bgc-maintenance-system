@@ -130,6 +130,27 @@ def maintenance():
     assets_list = Asset.query.all()
     return render_template('maintenance.html', logs=logs, assets=assets_list)
 
+@app.route('/maintenance/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_maintenance(id):
+    log = MaintenanceLog.query.get_or_404(id)
+    if request.method == 'POST':
+        log.asset_code = request.form.get('asset_code')
+        log.asset_name = request.form.get('asset_name')
+        log.maint_type = request.form.get('maint_type')
+        log.start_date = request.form.get('start_date')
+        log.next_date = request.form.get('next_date')
+        log.action_taken = request.form.get('action_taken')
+        log.spare_parts = request.form.get('spare_parts')
+        log.technician = request.form.get('technician')
+        log.cost = float(request.form.get('cost') or 0)
+        log.status = request.form.get('status')
+        db.session.commit()
+        flash('تم تحديث سجل الصيانة بنجاح!', 'success')
+        return redirect(url_for('maintenance'))
+    assets_list = Asset.query.all()
+    return render_template('edit_maintenance.html', log=log, assets=assets_list)
+
 @app.route('/maintenance/delete/<int:id>')
 @login_required
 def delete_maintenance(id):
