@@ -165,6 +165,13 @@ with app.app_context():
         admin = User(username='admin', password=generate_password_hash('admin123'))
         db.session.add(admin)
         db.session.commit()
+    # Auto-seed equipment/tools list into assets table if empty
+    try:
+        from seed_assets import seed as seed_assets
+        if Asset.query.count() == 0:
+            seed_assets(db, Asset)
+    except Exception as e:
+        print('Asset seeding skipped:', e)
 
 if __name__ == '__main__':
     app.run(debug=True)

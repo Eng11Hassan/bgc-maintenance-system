@@ -64,14 +64,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body row g-3">
-                    <div class="col-md-6">
-                        <label>كود المعدة:</label>
-                        <input type="text" name="asset_code" class="form-control" placeholder="11030504" required>
+                    <div class="col-md-12">
+                        <label>اختر المعدة من سجل الأصول:</label>
+                        <select id="assetSelect" class="form-select" required>
+                            <option value="">-- اختر معدة --</option>
+                            {% for a in assets %}
+                            <option value="{{ a.asset_code }}" data-name="{{ a.asset_name }}">{{ a.asset_code }} - {{ a.asset_name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <label>اسم المعدة:</label>
-                        <input type="text" name="asset_name" class="form-control" required>
-                    </div>
+                    <input type="hidden" name="asset_code" id="asset_code">
+                    <input type="hidden" name="asset_name" id="asset_name">
                     <div class="col-md-4">
                         <label>نوع الصيانة:</label>
                         <select name="maint_type" class="form-select">
@@ -119,6 +122,20 @@
                     <button type="submit" class="btn btn-primary">حفظ أمر الصيانة</button>
                 </div>
             </form>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var sel = document.getElementById('assetSelect');
+                var code = document.getElementById('asset_code');
+                var name = document.getElementById('asset_name');
+                if (sel) {
+                    sel.addEventListener('change', function() {
+                        var opt = sel.options[sel.selectedIndex];
+                        code.value = sel.value || '';
+                        name.value = opt ? (opt.getAttribute('data-name') || '') : '';
+                    });
+                }
+            });
+            </script>
         </div>
     </div>
 </div>
