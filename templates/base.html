@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +11,110 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/bgc-logo.jpg') }}">
     <style>
-        :root { --bgc-primary: #1a2a3a; --bgc-accent: #f0a500; }
-        body { font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; }
-        .navbar { background-color: var(--bgc-primary); }
-        .navbar-brand img { height: 38px; width: auto; }
-        .card { border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: none; margin-bottom: 20px; }
-        .btn-custom { border-radius: 8px; }
-        .bgc-footer { color: #6c757d; font-size: 0.85rem; }
-        @media (max-width: 576px) {
-            .navbar-brand span { font-size: 0.95rem; }
-            h3 { font-size: 1.25rem; }
+        :root { 
+            --bgc-primary: #12161f; 
+            --bgc-accent: #e60000; /* الأحمر الهندسي للوجو */
+            --bgc-dark-metal: #212529; 
+        }
+
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* تخصيص النافبار وهوية BGC */
+        .navbar { 
+            background-color: var(--bgc-primary) !important; 
+            border-bottom: 2px solid var(--bgc-accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .navbar-brand img { 
+            height: 38px; 
+            width: auto; 
+        }
+
+        /* تنسيق الكروت العامة */
+        .card { 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            border: none; 
+            margin-bottom: 20px; 
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* تخصيص ألوان الكروت لتتوافق حصرياً مع هوية BGC (أسود، أحمر، رمادي معدني) */
+        .card.bg-primary, .card.bg-success, .card.bg-info {
+            background: linear-gradient(135deg, #212529, #12161f) !important;
+            border-right: 4px solid var(--bgc-accent);
+        }
+        .card.bg-danger {
+            background: linear-gradient(135deg, #e60000, #990000) !important;
+        }
+        .card.bg-warning {
+            background: linear-gradient(135deg, #343a40, #212529) !important;
+            color: #fff !important;
+        }
+
+        /* توحيد ألوان التيكيتات والحالات بمطابقة هوية اللوجو */
+        .badge.bg-success, .badge-done {
+            background: linear-gradient(135deg, #212529, #12161f) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        .badge.bg-warning, .badge-warning-custom {
+            background: linear-gradient(135deg, #495057, #343a40) !important;
+            color: #fff !important;
+            padding: 6px 12px;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        .badge.bg-danger, .badge-danger-custom, .badge.bg-info {
+            background: linear-gradient(135deg, #e60000, #a30000) !important;
+            color: #fff !important;
+            padding: 6px 12px;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        .btn-custom { 
+            border-radius: 8px; 
+            font-weight: 600;
+        }
+
+        .bgc-footer { 
+            font-size: 0.85rem; 
+            border-top: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        /* زر تبديل الثيم */
+        .theme-toggle-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            background-color: var(--bgc-accent);
+            border-color: var(--bgc-accent);
+        }
+
+        [data-bs-theme="light"] .theme-toggle-btn {
+            border-color: rgba(0,0,0,0.2);
+            color: #333;
         }
     </style>
 </head>
@@ -48,8 +142,11 @@
                     {% endif %}
                     <li class="nav-item"><a class="nav-link" href="/report"><i class="fa-solid fa-triangle-exclamation"></i> الإبلاغ عن عطل</a></li>
                 </ul>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="navbar-text text-white">مرحباً: {{ current_user.username }}</span>
+                <div class="d-flex align-items-center gap-3">
+                    <button onclick="toggleTheme()" class="theme-toggle-btn" id="themeToggleIcon" title="تغيير المظهر">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <span class="navbar-text">مرحباً: {{ current_user.username }}</span>
                     <a href="/logout" class="btn btn-outline-danger btn-sm btn-custom"><i class="fa-solid fa-right-from-bracket"></i> خروج</a>
                 </div>
             </div>
@@ -71,11 +168,36 @@
 
         {% block content %}{% endblock %}
 
-        <footer class="text-center py-3 mt-4 bgc-footer">
+        <footer class="text-center py-3 mt-4 bgc-footer text-muted">
             &copy; 2026 BGC — نظام إدارة الصيانة والأصول
         </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleTheme() {
+            const htmlTag = document.documentElement;
+            const themeBtnIcon = document.querySelector('#themeToggleIcon i');
+            
+            if (htmlTag.getAttribute('data-bs-theme') === 'dark') {
+                htmlTag.setAttribute('data-bs-theme', 'light');
+                themeBtnIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('bgc_theme', 'light');
+            } else {
+                htmlTag.setAttribute('data-bs-theme', 'dark');
+                themeBtnIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('bgc_theme', 'dark');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('bgc_theme') || 'dark';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            const themeBtnIcon = document.querySelector('#themeToggleIcon i');
+            if (themeBtnIcon) {
+                themeBtnIcon.className = savedTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            }
+        });
+    </script>
 </body>
 </html>
